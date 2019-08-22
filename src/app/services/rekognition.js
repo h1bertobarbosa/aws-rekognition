@@ -1,4 +1,5 @@
 import AWS from 'aws-sdk';
+import { promisify } from 'util';
 
 class AWSRekognition {
   constructor() {
@@ -8,6 +9,18 @@ class AWSRekognition {
       region: process.env.AWS_REGION,
       apiVersion: '2016-06-27',
     });
+  }
+
+  async doRequest(requestName, params) {
+    try {
+      return this.rekognition[requestName](params).promise();
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  async createCollection(params) {
+    return this.doRequest('createCollection', params);
   }
 
   async detectFaces(params) {
@@ -20,5 +33,5 @@ class AWSRekognition {
     });
   }
 }
-
+// https://docs.aws.amazon.com/pt_br/rekognition/latest/dg/collections.html
 export default new AWSRekognition();
